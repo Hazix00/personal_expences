@@ -8,18 +8,16 @@ class Chart extends StatelessWidget {
   final List<Transaction> recentTransactions;
 
   Chart(this.recentTransactions);
-
+  // get the amount in each day in a week
   List<Map<String, Object>> get groupedTransactionsValues {
     return List.generate(
       7,
       (index) {
         final weekDay = DateTime.now().subtract(Duration(days: index));
-        double sumAmount = 0.0;
-        for (var transaction in recentTransactions) {
-          if (transaction.date.isSameDay(weekDay)) {
-            sumAmount += transaction.amount;
-          }
-        }
+        double sumAmount = recentTransactions
+            .where((tx) => tx.date.isSameDay(weekDay))
+            .fold(0, (sum, tx) => sum + tx.amount);
+
         return {
           'day': weekDay.format('E'),
           'amount': sumAmount,
@@ -34,6 +32,15 @@ class Chart extends StatelessWidget {
     });
   }
 
+  Widget dayChartBar(Map<String, Object> data) {
+    final spendPerCnt =
+        totalSpending == 0.0 ? 0.0 : (data['amount'] as double) / totalSpending;
+    return Flexible(
+      fit: FlexFit.tight,
+      child: ChartBar(data['day'], data['amount'], spendPerCnt),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -44,13 +51,7 @@ class Chart extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: groupedTransactionsValues.map((data) {
-            final spendPerCnt = totalSpending == 0.0
-                ? 0.0
-                : (data['amount'] as double) / totalSpending;
-            return Flexible(
-              fit: FlexFit.tight,
-              child: ChartBar(data['day'], data['amount'], spendPerCnt),
-            );
+            return dayChartBar(data);
           }).toList(),
         ),
       ),

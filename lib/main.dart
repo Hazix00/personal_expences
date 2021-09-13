@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'widgets/transaction_list.dart';
 import 'widgets/new_transaction.dart';
@@ -15,11 +14,13 @@ void main() {
   runApp(MyApp());
 }
 
+const String AppTitle = 'Personal Expenses';
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Personal Expenses',
+      title: AppTitle,
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
         accentColor: Colors.teal,
@@ -53,6 +54,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // a list of hard coded transactions
   final List<Transaction> _userTransactions = [
     Transaction(
       id: 't1',
@@ -61,36 +63,37 @@ class _MyHomePageState extends State<MyHomePage> {
       date: DateTime.now().subtract(Duration(days: 2)),
     ),
     Transaction(
-      id: 't1',
+      id: 't2',
       title: 'New Shoes',
       amount: 70.00,
       date: DateTime.now().subtract(Duration(days: 1)),
     ),
     Transaction(
-      id: 't1',
+      id: 't3',
       title: 'New Shoes',
       amount: 70.00,
       date: DateTime.now(),
     ),
     Transaction(
-      id: 't2',
+      id: 't4',
       title: 'New Jachet',
       amount: 40.00,
       date: DateTime.now(),
     ),
     Transaction(
-      id: 't2',
+      id: 't5',
       title: 'New Jachet',
       amount: 40.00,
-      date: DateTime.now().subtract(Duration(days: 2)),
+      date: DateTime.now().subtract(Duration(days: 5)),
     ),
     Transaction(
-      id: 't2',
+      id: 't6',
       title: 'New Jachet',
       amount: 40.00,
       date: DateTime.now().subtract(Duration(days: 3)),
     ),
   ];
+  // get transactions for today and 6 days before
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
       return tx.date.isAfter(
@@ -101,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
+  // adding new transaction with a modal
   void _addNewTransaction(String txTitle, double txAmount, DateTime txDate) {
     final newTx = Transaction(
       title: txTitle,
@@ -114,12 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  _deleteTransaction(String id) {
-    setState(() {
-      _userTransactions.removeWhere((tx) => tx.id == id);
-    });
-  }
-
   _startAddNewTransaction() {
     showModalBottomSheet(
       context: context,
@@ -127,10 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // delete transaction method
+  _deleteTransaction(String id) {
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // set appBar in a variable to calculate the body height
     final appBar = AppBar(
-      title: Text('Personal Expenses'),
+      title: Text(AppTitle),
       actions: [
         IconButton(
           icon: Icon(Icons.add),
@@ -138,18 +144,23 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
-    final bodyHeight = MediaQuery.of(context).size.height -
+    final mediaQuery = MediaQuery.of(context);
+    // calc body height = screen height - appbar height - status bar height
+    final bodyHeight = mediaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        mediaQuery.padding.top;
+
     return Scaffold(
       appBar: appBar,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-              height: bodyHeight * .24, child: Chart(_recentTransactions)),
+            height: bodyHeight * .24, // 24% of the body height for the Chart
+            child: Chart(_recentTransactions),
+          ),
           Container(
-            height: bodyHeight * .76,
+            height: bodyHeight * .76, // 76% of the body height for the transaction list
             child: TransactionList(
               _userTransactions,
               _deleteTransaction,

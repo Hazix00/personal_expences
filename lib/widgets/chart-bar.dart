@@ -13,15 +13,16 @@ class ChartBar extends StatelessWidget {
         return Column(
           children: [
             Container(
-              height: constraints.maxHeight * .15,
+              height: constraints.maxHeight * .15, // 15% height for price text
               child: FittedBox(
                 child: Text('${spendingAmount.toStringAsFixed(0)}MAD'),
               ),
             ),
             Container(
-              margin:
-                  EdgeInsets.symmetric(vertical: constraints.maxHeight * .05),
-              height: constraints.maxHeight * .6,
+              margin: EdgeInsets.symmetric(
+                vertical: constraints.maxHeight * .05,
+              ), // 5% margin top and buttom
+              height: constraints.maxHeight * .6, // 60% height for the bar
               width: 10,
               child: Stack(
                 children: [
@@ -45,7 +46,7 @@ class ChartBar extends StatelessWidget {
               ),
             ),
             Container(
-              height: constraints.maxHeight * .15,
+              height: constraints.maxHeight * .15, // 15% height for day text
               child: FittedBox(child: Text(label)),
             ),
           ],

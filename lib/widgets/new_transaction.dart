@@ -20,10 +20,9 @@ class _NewTransactionState extends State<NewTransaction> {
     final inAmount = double.tryParse(
         _amountController.text == '' ? '0' : _amountController.text);
 
+    //show message in case of invalid data
     if (inTitle.isEmpty || inAmount <= 0) {
-      final scaffold = Scaffold.of(ctx);
-      //show message in case of invalid data
-      scaffold.showSnackBar(
+      ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
           content: const Text(
             'Invalid input!',
@@ -33,7 +32,7 @@ class _NewTransactionState extends State<NewTransaction> {
           ),
           action: SnackBarAction(
             label: 'UNDO',
-            onPressed: scaffold.hideCurrentSnackBar,
+            onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -70,53 +69,65 @@ class _NewTransactionState extends State<NewTransaction> {
     return Scaffold(
       body: Builder(
         builder: (ctx) => Container(
-          child: Card(
-            elevation: 5,
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TextField(
-                    decoration: InputDecoration(labelText: 'Title'),
-                    controller: _titleController,
-                    onSubmitted: (_) => _submiData(ctx),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(labelText: 'Amount'),
-                    keyboardType: TextInputType.number,
-                    controller: _amountController,
-                    onSubmitted: (_) => _submiData(ctx),
-                  ),
-                  Container(
-                    height: 70,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _selectedDate.format('dd/MM/yyyy'),
-                          ),
-                        ),
-                        FlatButton(
-                          textColor: Theme.of(context).accentColor,
-                          child: Text(
-                            'Choose Date',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Card(
+              elevation: 5,
+              child: Container(
+                height: MediaQuery.of(ctx).size.height,
+                padding: EdgeInsets.only(
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Title'),
+                      controller: _titleController,
+                      onSubmitted: (_) => _submiData(ctx),
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Amount'),
+                      keyboardType: TextInputType.number,
+                      controller: _amountController,
+                      onSubmitted: (_) => _submiData(ctx),
+                    ),
+                    Container(
+                      height: 70,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              _selectedDate.format('dd/MM/yyyy'),
                             ),
                           ),
-                          onPressed: _presentDatePicker,
-                        ),
-                      ],
+                          TextButton(
+                            child: Text(
+                              'Choose Date',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ),
+                            onPressed: _presentDatePicker,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).textTheme.button.color,
-                    child: Text('Add Transaction'),
-                    onPressed: () => _submiData(ctx),
-                  )
-                ],
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        textStyle: TextStyle(
+                          color: Theme.of(context).textTheme.button.color,
+                        ),
+                      ),
+                      child: Text('Add Transaction'),
+                      onPressed: () => _submiData(ctx),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
